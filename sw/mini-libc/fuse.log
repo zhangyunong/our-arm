@@ -1,0 +1,5 @@
+Running: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/fuse tb -o amber-test.exe 
+ISim P.20131013 (signature 0xfbc00daa)
+Number of CPUs detected in this system: 2
+Turning on mult-threading, number of parallel sub-compilation jobs: 4 
+ERROR:Simulator:702 - Can not find design unit tb in library work located at isim/work 
