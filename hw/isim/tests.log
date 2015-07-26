@@ -9,3 +9,8 @@ Passed add 179 ticks
 Passed add 179 ticks
 Passed add 179 ticks
 Passed vmlinux 7366306 ticks
+Passed add 179 ticks
+Failed                                                                                                                                                                                                                                                              rrx
+Failed                                                                                                                                                                                                                                                              rrx
+Failed                                                                                                                                                                                                                                                              rrx
+Passed                                                                                                                                                                                                                                                              rrx 59 ticks

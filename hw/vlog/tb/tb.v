@@ -305,14 +305,16 @@ always @ ( posedge `U_SYSTEM.sys_clk )
 // ======================================
     initial
         begin
+	$value$plusargs("BOOT_MEM_FILE=%s", boot_mem_file_path);
+	$value$plusargs("AMBER_TEST_NAME=%s", amber_test_name);
 `ifndef XILINX_FPGA
-        $display("Load boot memory from %s", `BOOT_MEM_FILE);
+        $display("Load boot memory from %s", boot_mem_file_path);
         boot_mem_line_count   = 0;
-        boot_mem_file         = $fopen(`BOOT_MEM_FILE,    "r");
+        boot_mem_file         = $fopen(boot_mem_file_path,    "r");
         if (boot_mem_file == 0)
             begin
             `TB_ERROR_MESSAGE
-            $display("ERROR: Can't open input file %s", `BOOT_MEM_FILE);
+            $display("ERROR: Can't open input file %s", boot_mem_file_path);
             $finish;
             end
         
@@ -332,7 +334,7 @@ always @ ( posedge `U_SYSTEM.sys_clk )
                     if (aligned_line[120*8-1:119*8] != 8'h40 && aligned_line[120*8-1:119*8] != 8'h00)
                         begin
                         $display("Format ERROR in input file %s, line %1d. Line must start with a @, not %08x", 
-                                 `BOOT_MEM_FILE, boot_mem_line_count, aligned_line[118*8-1:117*8]);
+                                 boot_mem_file_path, boot_mem_line_count, aligned_line[118*8-1:117*8]);
                         `TB_ERROR_MESSAGE
                         end
                     
@@ -370,7 +372,7 @@ always @ ( posedge `U_SYSTEM.sys_clk )
         `else
         core_str = "amber23";
         `endif         
-        $display("Core %s, log file %s, timeout %0d, test name %0s ", core_str, `AMBER_LOG_FILE, timeout, `AMBER_TEST_NAME );          
+        $display("Core %s, log file %s, timeout %0d, test name %0s ", core_str, `AMBER_LOG_FILE, timeout, amber_test_name );          
         log_file = $fopen(`AMBER_LOG_FILE, "a");                               
         end
     
@@ -495,6 +497,8 @@ initial
 assign test_status_set = `U_TEST_MODULE.test_status_set;
 assign test_status_reg = `U_TEST_MODULE.test_status_reg;
 
+reg [2047:0]	boot_mem_file_path, amber_test_name;
+
 always @*
         begin
         if ( test_status_set || testfail )
@@ -503,9 +507,9 @@ always @*
                 begin
                 display_registers;
                 $display("++++++++++++++++++++");
-                $write("Passed %s %0d ticks\n", `AMBER_TEST_NAME, `U_TB.clk_count);
+                $write("Passed %s %0d ticks\n", amber_test_name, `U_TB.clk_count);
                 $display("++++++++++++++++++++");
-                $fwrite(`U_TB.log_file,"Passed %s %0d ticks\n", `AMBER_TEST_NAME, `U_TB.clk_count);
+                $fwrite(`U_TB.log_file,"Passed %s %0d ticks\n", amber_test_name, `U_TB.clk_count);
                 $finish;
                 end
             else
@@ -514,23 +518,23 @@ always @*
                 if ( testfail )
                     begin
                     $display("++++++++++++++++++++");
-                    $write("Failed %s\n", `AMBER_TEST_NAME);
+                    $write("Failed %s\n", amber_test_name);
                     $display("++++++++++++++++++++");
-                    $fwrite(`U_TB.log_file,"Failed %s\n", `AMBER_TEST_NAME);
+                    $fwrite(`U_TB.log_file,"Failed %s\n", amber_test_name);
                     $finish;
                     end
                 else
                     begin
                     $display("++++++++++++++++++++");
                     if (test_status_reg >= 32'h8000)
-                        $write("Failed %s - with error 0x%08x\n", `AMBER_TEST_NAME, test_status_reg);
+                        $write("Failed %s - with error 0x%08x\n", amber_test_name, test_status_reg);
                     else
-                        $write("Failed %s - with error on line %1d\n", `AMBER_TEST_NAME, test_status_reg);
+                        $write("Failed %s - with error on line %1d\n", amber_test_name, test_status_reg);
                     $display("++++++++++++++++++++");
                     if (test_status_reg >= 32'h8000)
-                        $fwrite(`U_TB.log_file,"Failed %s - with error 0x%08h\n", `AMBER_TEST_NAME, test_status_reg);
+                        $fwrite(`U_TB.log_file,"Failed %s - with error 0x%08h\n", amber_test_name, test_status_reg);
                     else
-                        $fwrite(`U_TB.log_file,"Failed %s - with error on line %1d\n", `AMBER_TEST_NAME, test_status_reg);
+                        $fwrite(`U_TB.log_file,"Failed %s - with error on line %1d\n", amber_test_name, test_status_reg);
                     $finish;
                     end
                 end

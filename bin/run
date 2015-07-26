@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+TESTNAME=$1
+VLOG=$AMBER_BASE/hw/vlog
+AMBER_CORE=AMBER_A25_CORE
+shift
+make -C $AMBER_BASE/hw/tests/new $TESTNAME.mem
+pushd $AMBER_BASE/hw/isim
+#fuse tb -o amber-test -prj amber-isim.prj \
+#	-d $AMBER_CORE \
+#	-d AMBER_TEST_NAME=\"$TESTNAME\" \
+#	-d AMBER_SIM_CTRL=1 \
+#	-incremental \
+#	-i $VLOG/lib \
+#	-i $VLOG/system \
+#	-i $VLOG/amber25 \
+#	-i $VLOG/tb
+./amber-test -tclbatch run.do \
+	-testplusarg BOOT_MEM_FILE=$AMBER_BASE/hw/tests/new/$TESTNAME.mem \
+	-testplusarg AMBER_TEST_NAME=$TESTNAME
+popd
